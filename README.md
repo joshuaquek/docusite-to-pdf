@@ -42,3 +42,6 @@ Generate the PDFs, assuming that you have already generated the HTML pages insid
 ```bash
 npm run html2pdf
 ```
+
+## License
+MIT License
