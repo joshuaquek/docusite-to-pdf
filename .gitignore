@@ -1,0 +1,11 @@
+.env
+.DS_Store
+package-lock.json
+/config.json
+/node_modules
+/outputs
+/.vscode
+/.archives
+/.configs
+/.build
+
