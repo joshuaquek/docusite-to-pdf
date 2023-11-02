@@ -1,3 +1,7 @@
+/**
+ * Crawls a website and generates PDFs of each page.
+ */
+
 const puppeteer = require('puppeteer')
 const fs = require('fs-extra')
 const path = require('path')
@@ -7,12 +11,24 @@ const { cleanUpAll, cleanUpHtml, cleanUpPdf } = require('./clean')
 
 let pageCount = 0
 
+/**
+ * Gets the path from a URL.
+ * @param {string} url - The URL to get the path from.
+ * @returns {string} The path from the URL.
+ */
 function getPathFromUrl (url) {
   const parsedUrl = urlModule.parse(url)
   const cleanPath = parsedUrl.pathname.replace(/^\//, '').replace(/\/$/, '').replace(/\//g, '_')
   return cleanPath || 'index'
 }
 
+/**
+ * Scrapes a page and its links.
+ * @param {Object} browser - The Puppeteer browser instance.
+ * @param {string} url - The URL of the page to scrape.
+ * @param {Object} baseDomain - The parsed URL of the base domain.
+ * @param {Set} visitedPaths - The set of visited paths.
+ */
 async function scrapePage (browser, url, baseDomain, visitedPaths = new Set()) {
   const urlPath = getPathFromUrl(url)
   if (visitedPaths.has(urlPath)) return
@@ -45,6 +61,9 @@ async function scrapePage (browser, url, baseDomain, visitedPaths = new Set()) {
   }
 }
 
+/**
+ * Scrapes a website to HTML.
+ */
 async function scrapeToHTML () {
   const targetURL = config.url
   const baseDomain = urlModule.parse(targetURL)
@@ -56,6 +75,9 @@ async function scrapeToHTML () {
   console.log('Scraping process completed.')
 }
 
+/**
+ * Generates PDFs from HTML files.
+ */
 async function generatePDF () {
   console.log('Starting PDF conversion...')
 

@@ -5,6 +5,12 @@ const path = require('path')
 const offlineHtmlDirectory = path.join(__dirname, '../outputs/html')
 const offlinePdfDirectory = path.join(__dirname, '../outputs/pdf')
 
+/**
+ * Deletes all generated HTML and PDF files.
+ * @async
+ * @function cleanUpAll
+ * @returns {Promise<void>}
+ */
 exports.cleanUpAll = async function () {
   try {
     console.log('Deleting generated HTML files...')
@@ -29,6 +35,12 @@ exports.cleanUpAll = async function () {
   }
 }
 
+/**
+ * Deletes all generated HTML files.
+ * @async
+ * @function cleanUpHtml
+ * @returns {Promise<void>}
+ */
 exports.cleanUpHtml = async function () {
   try {
     console.log('Deleting generated HTML files...')
@@ -45,6 +57,12 @@ exports.cleanUpHtml = async function () {
   }
 }
 
+/**
+ * Deletes all generated PDF files.
+ * @async
+ * @function cleanUpPdf
+ * @returns {Promise<void>}
+ */
 exports.cleanUpPdf = async function () {
   try {
     console.log('Deleting PDF output...')
