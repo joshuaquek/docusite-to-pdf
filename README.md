@@ -37,7 +37,7 @@ Generate only the HTML pages:
 npm run html
 ```
 
-Generate the PDFs, assuming that you have already generated the HTML pages inside the `outputs/html` folder:
+Generate the PDFs, assuming that you have already generated the HTML pages inside the `./outputs/html` folder:
 ```bash
 npm run html2pdf
 ```
