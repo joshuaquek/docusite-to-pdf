@@ -3,7 +3,8 @@
 package-lock.json
 /config.json
 /node_modules
-/outputs
+/outputs/html/*.html
+/outputs/pdf/*.pdf
 /.vscode
 /.archives
 /.configs
