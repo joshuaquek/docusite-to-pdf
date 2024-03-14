@@ -9,7 +9,7 @@ Clone this repo.
 
 Then install the dependencies by running:
 ```
-npm install
+npm install --legacy-peer-deps
 ```
 
 ## 🛠️ Usage
