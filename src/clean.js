@@ -4,6 +4,7 @@ const path = require('path')
 // Directory with HTML files
 const offlineHtmlDirectory = path.join(__dirname, '../outputs/html')
 const offlinePdfDirectory = path.join(__dirname, '../outputs/pdf')
+const offlineMergedPdfDirectory = path.join(__dirname, '../outputs/merged_pdf')
 
 /**
  * Deletes all generated HTML and PDF files.
@@ -72,6 +73,27 @@ exports.cleanUpPdf = async function () {
         await fs.remove(path.join(offlinePdfDirectory, file))
       }
     }
+
+    console.log('Cleanup completed.')
+  } catch (error) {
+    console.error('Error during cleanup:', error.message)
+  }
+}
+
+exports.cleanUpMergedPdfDirectory = async function () {
+  try {
+    console.log('Deleting Merged PDF output...')
+    const directory = offlineMergedPdfDirectory
+
+    fs.readdir(directory, (err, files) => {
+      if (err) throw err
+
+      for (const file of files) {
+        fs.unlink(path.join(directory, file), err => {
+          if (err) throw err
+        })
+      }
+    })
 
     console.log('Cleanup completed.')
   } catch (error) {
