@@ -4,10 +4,11 @@
 
 const puppeteer = require('puppeteer')
 const fs = require('fs-extra')
+const { PDFDocument } = require('pdf-lib')
 const path = require('path')
 const urlModule = require('url')
 const config = require('../config.json')
-const { cleanUpAll, cleanUpHtml, cleanUpPdf } = require('./clean')
+const { cleanUpAll, cleanUpHtml, cleanUpPdf, cleanUpMergedPdfDirectory } = require('./clean')
 
 let pageCount = 0
 
@@ -41,7 +42,22 @@ async function scrapePage (browser, url, baseDomain, visitedPaths = new Set()) {
 
   // Add the CSS rule to make the element with ID `onetrust-consent-sdk` hidden
   await page.addStyleTag({
-    content: '#onetrust-consent-sdk { visibility: hidden; }'
+    content: '#onetrust-consent-sdk { visibility: hidden !important; }'
+  })
+  await page.addStyleTag({
+    content: '.onetrust-close-btn-handler { visibility: hidden !important; }'
+  })
+  await page.addStyleTag({
+    content: '#onetrust-policy-text { visibility: hidden !important; }'
+  })
+
+  // Remove the grandparent of the <p>Was this page helpful?</p> element
+  await page.evaluate(() => {
+    const pElements = Array.from(document.querySelectorAll('p'))
+    const targetElement = pElements.find(p => p.textContent.includes('Was this page helpful?'))
+    if (targetElement && targetElement.parentElement && targetElement.parentElement.parentElement) {
+      targetElement.parentElement.parentElement.remove()
+    }
   })
 
   const content = await page.content()
@@ -113,6 +129,35 @@ async function generatePDF () {
   console.log('PDF conversion completed. Each HTML page has been saved as an individual PDF.')
 }
 
+async function mergePdfFiles () {
+  const pdfDirectoryPath = path.join(__dirname, '../outputs/pdf')
+  const mergedPdfDirectoryPath = path.join(__dirname, '../outputs/merged_pdf')
+  const pdfDoc = await PDFDocument.create()
+  const files = fs.readdirSync(pdfDirectoryPath).filter(file => path.extname(file) === '.pdf')
+
+  // Sort the files based on the number prefix
+  files.sort((a, b) => {
+    const aNumber = parseInt(a.split('-')[0])
+    const bNumber = parseInt(b.split('-')[0])
+    return aNumber - bNumber
+  })
+
+  for (const file of files) {
+    const filePath = path.join(pdfDirectoryPath, file)
+    const pdfBytes = fs.readFileSync(filePath)
+    const pdfDocToMerge = await PDFDocument.load(pdfBytes)
+    const pages = await pdfDoc.copyPages(pdfDocToMerge, pdfDocToMerge.getPageIndices())
+
+    for (const page of pages) {
+      pdfDoc.addPage(page)
+    }
+  }
+
+  const mergedPdfFile = await pdfDoc.save()
+  fs.writeFileSync(path.join(mergedPdfDirectoryPath, 'output.pdf'), mergedPdfFile)
+  console.log('Merging PDF complete. Merged PDF file has been saved.')
+}
+
 (async () => {
   const command = process.argv[2]
   switch (command) {
@@ -123,6 +168,10 @@ async function generatePDF () {
     case 'html2pdf':
       await cleanUpPdf()
       await generatePDF()
+      break
+    case 'mergePdf':
+      await cleanUpMergedPdfDirectory()
+      await mergePdfFiles()
       break
     default:
       await cleanUpAll()
