@@ -9,4 +9,4 @@ package-lock.json
 /.archives
 /.configs
 /.build
-
+outputs/merged_pdf/output.pdf

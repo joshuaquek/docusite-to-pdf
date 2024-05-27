@@ -83,18 +83,15 @@ exports.cleanUpPdf = async function () {
 exports.cleanUpMergedPdfDirectory = async function () {
   try {
     console.log('Deleting Merged PDF output...')
-    const directory = offlineMergedPdfDirectory
-
-    fs.readdir(directory, (err, files) => {
-      if (err) throw err
-
-      for (const file of files) {
-        fs.unlink(path.join(directory, file), err => {
-          if (err) throw err
-        })
+    const directoryPath = offlineMergedPdfDirectory
+    const filePath = path.join(directoryPath, 'output.pdf')
+    fs.unlink(filePath, (err) => {
+      if (err) {
+        console.error(`Error while deleting file ${filePath}:`, err)
+      } else {
+        console.log(`Successfully deleted ${filePath}`)
       }
     })
-
     console.log('Cleanup completed.')
   } catch (error) {
     console.error('Error during cleanup:', error.message)
